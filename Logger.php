@@ -1,44 +1,63 @@
 <?php
+/**
+ * @category Digitalriver
+ * @package  Digitalriver_DrPay
+ */
 namespace Digitalriver\DrPay\Logger;
 
-use Psr\Log\LoggerInterface;
+use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Store\Model\ScopeInterface;
+use Monolog\Handler\HandlerInterface;
 
 /**
- * Class SomeClass
- * The class responsible for doing something
+ * Class Digitalriver Logger
+ *
+ * @FIXME Refactor to no longer extend the base class, but instead use composition to inject an abstract logger (i.e.
+ *        a LoggerInterface)
  */
-class Logger
+class Logger extends \Digitalriver\DrPay\Logger\Drlogger
 {
     /**
-     * @var LoggerInterface
+     * @var ScopeConfigInterface
      */
-    private $logger;
+    private $scopeConfig;
 
     /**
-     * SomeClass constructor.
-     * @param LoggerInterface $logger
+     * Logger constructor.
+     * @param string             $name       The logging channel
+     * @param HandlerInterface[] $handlers   Optional stack of handlers, the first one in the array is called first,etc.
+     * @param callable[]         $processors Optional array of processors
+     * @param ScopeConfigInterface $scopeConfig
      */
-    public function __construct(LoggerInterface $logger)
-    {
-        $this->logger = $logger;
-    }
+    public function __construct(
+        string $name,
+        ScopeConfigInterface $scopeConfig,
+        array $handlers = [],
+        array $processors = []
+    ) {
+        /**
+         * TODO: This should be eliminated with MAGETWO-53989
+         */
+        $handlers = array_values($handlers);
+        $this->scopeConfig = $scopeConfig;
 
+        parent::__construct($name, $handlers, $processors);
+        $this->name = $name;
+    }
     /**
-     * Do something
-     * @return void
+     * Adds a log record.
+     *
+     * @param  int     $level   The logging level
+     * @param  string  $message The log message
+     * @param  array   $context The log context
+     * @return bool    Whether the record has been processed
      */
-    public function execute()
+    public function addRecord(int $level, string $message, array $context = []): bool
     {
-        $this->logger->alert('WAKE UP!');
-        $this->logger->debug('Next step');
-        $this->logger->notice('Take a look at this');
-        $this->logger->error('Something went wrong', ['param1' => 'value1']);
+        $debug = $this->scopeConfig->getValue('dr_settings/config/debug', ScopeInterface::SCOPE_STORE);
+        if ($debug) {
+            return parent::addRecord($level, $message, $context);
+        }
+        return false;
     }
-
-    public function info(String $name)
-    {
-
-        return true;
-    }
-
 }
