@@ -328,7 +328,7 @@
     </type>
     <type name="Digitalriver\DrPay\Model\SkuGroup\ApiClient">
         <arguments>
-            <argument name="logger" xsi:type="object">Digitalriver\DrPay\Logger\Logger</argument>
+            <argument name="logger" xsi:type="object">Psr\Log\LoggerInterface</argument>
             <argument name="responseValidator" xsi:type="object">
                 Digitalriver\DrPay\Model\Validator\SkuGroupResponse
             </argument>

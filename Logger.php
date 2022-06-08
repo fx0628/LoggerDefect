@@ -34,4 +34,11 @@ class Logger
         $this->logger->notice('Take a look at this');
         $this->logger->error('Something went wrong', ['param1' => 'value1']);
     }
+
+    public function info(String $name)
+    {
+
+        return true;
+    }
+
 }
